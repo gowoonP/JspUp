@@ -3,11 +3,11 @@
 <%
 	String userid = null;
 	String name = null;
-	String idx = null;
+	int idx = 0;
 	if(session.getAttribute("userid") != null) {	//세션변수 값이 null이 아닐 때
 			userid = (String)session.getAttribute("userid");	//userid에 session변수값저장
 			name = (String)session.getAttribute("name");
-			idx = (String)session.getAttribute("idx");
+			idx = (int)session.getAttribute("idx");
 	}
 %>
 <!DOCTYPE html>

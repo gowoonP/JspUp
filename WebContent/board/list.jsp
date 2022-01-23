@@ -7,8 +7,10 @@
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs= null;
+	ResultSet rs1 = null;
 	String sql = "";
-	int totalCount=0;
+	int totalCount = 0;
+	int repCount = 0;
 	
 	try{
 	conn = Dbconn.getConnection();
@@ -19,9 +21,14 @@
 		  if(rs.next()){
 				totalCount = rs.getInt("total");
 		  }
+		  
+
+
 		sql = "select b_idx, b_userid, b_title, b_regdate, b_hit, b_like from tb_board order by b_idx desc";
 		pstmt = conn.prepareStatement(sql);
 		rs = pstmt.executeQuery();
+		
+
 	} 
 	}catch(Exception e){
 	e.printStackTrace();
@@ -34,6 +41,12 @@
 <meta charset="UTF-8">
 <title>커뮤니티 - 리스트</title>
 </head>
+<style>
+	a {
+	text-decoration: none;
+	color: black;
+	}
+</style>
 <body>
 	<h2>커뮤니티 - 리스트</h2> 
 	<p>게시글 : <%=totalCount %>개</p>
@@ -54,10 +67,25 @@
 		String b_regdate= rs.getString("b_regdate").substring(0, 10);
 		String b_hit = rs.getString("b_hit");
 		String b_like = rs.getString("b_like");
+		
+		sql = "select count(r_boardidx) as tot from tb_reply where r_boardidx=?";
+		pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, b_idx);
+		rs1 = pstmt.executeQuery();
+		if(rs1.next()) {
+			repCount = rs1.getInt("tot");
+		}
 %>
 	<tr align="center">
 		<td><%= b_idx%></td>
-		<td align="left"><a href="./view.jsp?b_idx=<%=b_idx%>"><%= b_title%></a></td>
+		<td align="left"><a href="./view.jsp?b_idx=<%=b_idx%>"><%= b_title%>
+		<%
+			if(repCount != 0) {
+		%>
+		[<%=repCount %>]
+		<%
+			}
+		%></a></td>
 		<td><%= b_userid%></td>
 		<td><%= b_hit%></td>
 		<td><%= b_regdate%></td>
@@ -67,6 +95,7 @@
 	}
 %>
 	</table>
-	<p><input type= "button" value="글쓰기" onclick="location.href='./write.jsp'"> <input type="button" value="메인" onclick="location.href='../login.jsp'"></p>
+	<p><input type= "button" value="글쓰기" onclick="location.href='./write.jsp'"> 
+	<input type="button" value="메인" onclick="location.href='../login.jsp'"></p>
 </body>
 </html>
